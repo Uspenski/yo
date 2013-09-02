@@ -1,17 +1,11 @@
-	//куфон
-Cufon.replace('h1, h2, h3, h5');
-
 	//функции
 function sendAjax(count){
-	var AjaxData = {
+	var data = {
 		what:$('a.current:first').attr('data-what'),
 		category:(function(){
 			if($('a.current:first').attr('data-what') == "category")return 'off'; else return $('a.current:first').attr('data-category');
-			}()),
+			}),
 		currentWrite:count(),
-		getpanel:(function(){
-			if($('div#sort_panel')[0] == null || $('div#sort_panel')[0] == 'undefined')return 'yes'; else return 'off';
-			}()),
 		key:$('a.current:first').attr('data-key'),
 		data:$('a.current:first').attr('href'),
 		id:$('a.current:first').attr('id'),
@@ -21,67 +15,51 @@ function sendAjax(count){
 			}else{
 				return 'off';
 				}
-			}()),
+			}),
 		classPower:(function(){
 			if($('select')[0] != null && $('select')[0] != 'undefined'){
 					if($('#select_right_sort_block select') != 'none')return $('#select_right_sort_block select').val();else return 'off';
 				}else{
 					return 'off';
 					}
-			}()),
+			}),
 		sortPrice:(function(){
-			if($('#href_right_sort_block a')[0] != null && $('#href_right_sort_block a')[0] != 'undefined'){
-				if($('#href_right_sort_block a').attr("data-sort") != 'none')return $('#href_right_sort_block a').attr("data-sort"); else return 'off';
-			}else{
-					return 'off';
-					}
-			}())
+			if($('#href_right_sort_block a').attr("data-sort") != 'none')return $('#href_right_sort_block a').attr("data-sort"); else return 'off';
+			})
 		};
-	for(prop in AjaxData){
-		if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null){
-			alert(AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");
-			return false;
-			}
-		}
+	for(prop in data){if(data[prop] == 'undefined' || data[prop] == null){
+		alert(prop+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");
+		return false;
+		}}
 	//$('div#outer_shop').empty();
-	for(var i=0; i<7; i++){
-		
-	$.ajax({
+	return true;
+	}
+function create_production(obj){
+	for(var i=0; i<7; i++)$.ajax({
 		url:'ajax/request.php', 
-		data: AjaxData,
-		success:function(response){
-			/*
-			if($('div#sort_panel')[0] == null || $('div#sort_panel')[0] == 'undefined'){
-			$('div#outer_shop').fadeOut('fast', function(){
-			$('div#outer_shop').append(response).fadeIn('slow');
-			});
-			}else{
-			$('div#product_out').fadeOut('fast', function(){
-			//if($('div#product_out')[0] != null && $('div#product_out')[0] != 'undefined')alert('ok');
-			//$('div#outer_shop').append(response);
-			//$('div#product_out').fadeIn('slow');
-			//$('div#outer_shop').append(response).fadeIn('slow');
-			$('div#outer_shop').append(response).fadeIn('slow');
-			});	
-			
-				}*/
-			$('div#outer_shop').append(response).fadeIn('slow');
+		data:{
+			what:obj.what,
+			category:obj.category,
+			currentWrite:obj.currentWrite(),
+			//sortBy:null,
+			key:obj.key,
+			data:obj.data,
+			id:obj.id
 			},
+		success:function(response){$('div#outer_shop').append(response)},
 		type:'GET',
 		async:false
 	});
-	AjaxData.currentWrite = count();
-	}
-	if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
+	$('div#outer_shop').fadeIn("slow");
+	if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
 	if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});
-	return true;
 	}
-
 function get_count(){
 	var n = 0;
 	return {get:function(){return n++;},set_count:function(){n = 0;}}
 	}
-
+	//куфон
+Cufon.replace('h1, h2, h3, h5');	
 $(document).ready(function() {
 	var counter = get_count();
 	//слайдшоу
@@ -92,64 +70,51 @@ $('#accordion').dcAccordion({/*eventType: 'click',autoClose: true,saveState: tru
 onload = function () {for(var lnk = document.links, j = 0; j < lnk.length; j++)if(lnk[j].href == document.URL) lnk[j].parentNode.className = 'current';}
 	//события
 $('a[href^="http://"]').attr("target", "_blank");//если вначале ссылки присутствует "http://", т.е. ссылка на сторонний сайт - открывает её в новом окне
-
-//СОБЫТИЯ ДЛЯ AJAX!!!!
-//клик по категории в меню
-$('#accordion').on('click', 'a', function(){
+//$('a.catalog, .dcjq-current-parent ul li a').click(function(){
+$('#accordion a').on('click', function(){
 	counter.set_count();
-	if($(this).attr('data-what') == 'category' && $('a.current:first').attr('data-what') != 'category' && $(this).attr('id') == $('a.current:first').attr('data-category')){
-		//если ткнутая ссылка - категория И текущая(current) ссылка - не категория И ткнутая ссылка является подкатегорией текущей(current)- то не обновлять панель параметров сортировки, т.к. сортируем тоже самое, что и было
-		$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-		$(this).addClass("current");
-		$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
+	$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+	//$('div#outer_shop').hide("fast");
+	$('div#outer_shop').empty();
+	if($(this).attr('data-what') == 'category'){
+		create_production({
+		what:$(this).attr('data-what'),
+		category:$(this).attr('data-category'),
+		currentWrite:counter.get,
+		key:$(this).attr('data-key'),
+		data:$(this).attr('href'),
+		id:$(this).attr('id')
+		});
 		}else{
-		//иначе - 
-		if($(this).attr('data-what') == 'category' && $('a.current:first').attr('data-what') == 'category' && $(this)[0] == $('a.current:first')[0]){
-			//если ткнутая ссылка категории является текущей(т.е. юзер ткнул в тикущую ссылку) - сортировку оставить прежней
-			$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-			$(this).addClass("current");
-			//$('div#product_out').fadeOut('fast',function(){
-			$('div').detach('#product_out');//});
-				}else{
-			$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-			$(this).addClass("current");
-			if($(this).attr('data-what') == 'category')$('div#outer_shop').empty(); else {
-				$('div#product_out').fadeOut('fast',function(){
-				$('div').detach('#product_out');});}	
-			}
+		create_production({
+		what:$(this).attr('data-what'),
+		category:$(this).attr('data-category'),
+		currentWrite:counter.get,
+		//sortBy:null
+		key:$(this).attr('data-key'),
+		data:$(this).attr('href'),
+		id:$(this).attr('id')
+		});
 		}
-	if(!sendAjax(counter.get))return false;
+	$(this).addClass("current");
 	return false;
+	});	
+	//открытие пункта сплит-систем при загрузке страницы магазина
+if(document.getElementById("split_system"))document.getElementById("split_system").click();
+	//события выведенных ajax'ом данных
+$('#outer_shop').on('click', '#outer_shop', function(){
+	//запрос к серверу с выборкой
 	});
-	
-//клик по ссылке "инвертор" - перенаправляет на чекбокс
-$('#outer_shop').on('click', '#invert_right_sort_block a', function(){
-$('#invert_right_sort_block input[type=checkbox]').click();
-	return false;
-	});
-
-//клик по чекбоксу
-$('#outer_shop').on('click', '#invert_right_sort_block input[type=checkbox]', function(){
-	counter.set_count();
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-	if(!sendAjax(counter.get))return false;
-	});
-	
-//изменение значения 'select'
 $('#outer_shop').on('change', '#select_right_sort_block select', function(){
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-	if(!sendAjax(counter.get))return false;
-	//alert($(this).val());
+	alert($(this).val());
 	});
-	
-//клик по ссылке "цена:"
+$('#outer_shop').on('click', '#invert_right_sort_block a', function(){
+	$('#invert_right_sort_block input[type=checkbox]').click();
+	return false;
+	});
 $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 	counter.set_count();
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
+	//alert($('a.current:first').attr("data-what"));
 	if(!sendAjax(counter.get))return false;
 	switch ($(this).attr("data-sort")){
 		case "none":{	
@@ -179,6 +144,24 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 		}
 	return false;
 	});
-	//открытие пункта сплит-систем при загрузке страницы магазина
-if(document.getElementById("split_system"))document.getElementById("split_system").click();
+	//если на странице нет чекбокса с инвертором
+if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('#invert_right_sort_block').css({
+	'border-right-style':'none',
+	'border-right-width':'0px',
+	'border-right-color':'none'});
+	else $('#invert_right_sort_block').css({
+	'border-right-style':'solid',
+	'border-right-width':'1px',
+	'border-right-color':'#e9e9e9'});
+	//если на странице нет селекта
+if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({
+	'border-left-style':'none',
+	'border-left-width':'0px',
+	'border-left-color':'none',
+	'padding-left':'10px'});
+	else $('#href_right_sort_block').css({
+	'border-left-style':'solid',
+	'border-left-width':'1px',
+	'border-left-color':'#e9e9e9',
+	'padding-left':'9px'});
 });
