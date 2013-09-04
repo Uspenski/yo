@@ -1,9 +1,8 @@
 	//куфон
 Cufon.replace('h1, h2, h3, h5');
 
-	//функции
-function sendAjax(count){
-	var AjaxData = {
+function createAjaxData(count){
+return {
 		what:$('a.current:first').attr('data-what'),
 		category:(function(){
 			if($('a.current:first').attr('data-what') == "category")return 'off'; else return $('a.current:first').attr('data-category');
@@ -43,7 +42,10 @@ function sendAjax(count){
 			return false;
 			}
 		}
-	//$('div#outer_shop').empty();
+	}
+	//функции
+function sendAjax(count, obj){
+	var  AjaxData = createAjaxData(count);
 	for(var i=0; i<7; i++){
 		
 	$.ajax({
@@ -65,7 +67,7 @@ function sendAjax(count){
 			});	
 			
 				}*/
-			$('div#outer_shop').append(response).fadeIn('slow');
+			$('div#outer_shop').append(response);//.fadeIn('slow');
 			},
 		type:'GET',
 		async:false
@@ -97,29 +99,9 @@ $('a[href^="http://"]').attr("target", "_blank");//если вначале сс�
 //клик по категории в меню
 $('#accordion').on('click', 'a', function(){
 	counter.set_count();
-	if($(this).attr('data-what') == 'category' && $('a.current:first').attr('data-what') != 'category' && $(this).attr('id') == $('a.current:first').attr('data-category')){
-		//если ткнутая ссылка - категория И текущая(current) ссылка - не категория И ткнутая ссылка является подкатегорией текущей(current)- то не обновлять панель параметров сортировки, т.к. сортируем тоже самое, что и было
-		$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-		$(this).addClass("current");
-		$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-		}else{
-		//иначе - 
-		if($(this).attr('data-what') == 'category' && $('a.current:first').attr('data-what') == 'category' && $(this)[0] == $('a.current:first')[0]){
-			//если ткнутая ссылка категории является текущей(т.е. юзер ткнул в тикущую ссылку) - сортировку оставить прежней
-			$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-			$(this).addClass("current");
-			//$('div#product_out').fadeOut('fast',function(){
-			$('div').detach('#product_out');//});
-				}else{
-			$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-			$(this).addClass("current");
-			if($(this).attr('data-what') == 'category')$('div#outer_shop').empty(); else {
-				$('div#product_out').fadeOut('fast',function(){
-				$('div').detach('#product_out');});}	
-			}
-		}
-	if(!sendAjax(counter.get))return false;
+	//$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+	//$(this).addClass("current");
+	if(!sendAjax(counter.get, $(this)))return false;
 	return false;
 	});
 	
