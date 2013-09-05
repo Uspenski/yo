@@ -1,7 +1,7 @@
 	//куфон
 Cufon.replace('h1, h2, h3, h5');
-
-function createAjaxData(count){
+	//функции
+function CreateAjaxData(count){
 return {
 		what:$('a.current:first').attr('data-what'),
 		category:(function(){
@@ -43,49 +43,53 @@ return {
 			}
 		}
 	}
-	//функции
+
 function sendAjax(count, obj){
-	var  AjaxData = createAjaxData(count);
-	for(var i=0; i<7; i++){
-		
-	$.ajax({
+	//var  AjaxData = createAjaxData(count);	
+	var count = 0;
+	var countOfWrites = 7;//добавление по countOfWrites(7) записей
+	if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
+	if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});
+	return {
+		someFunction: function(obj){
+			if($.isEmptyObject(obj)){
+				for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
+				}else{
+			//проверка меню сортировки
+			if(obj.attr('data-what') == "category" && ($('a.current:first') != obj || !obj.children().is($('a.current:first')))){
+				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
+					count = 0;
+					$('*').fadeOut('slow', function(){
+						for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));
+						});
+					}else{
+						count = 1;
+						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
+						$('*').fadeOut('slow', function(){
+							for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));
+							});
+						}
+			//подготовка данных для ajax
+			//отправка Ajax'a
+				}
+			}
+		};
+	}
+
+function oneMoreSomeFunction(){
+	//Обращение к элементам будет происходить через this, т.к. она будет вызвана методом call
+		$.ajax({
 		url:'ajax/request.php', 
 		data: AjaxData,
-		success:function(response){
-			/*
-			if($('div#sort_panel')[0] == null || $('div#sort_panel')[0] == 'undefined'){
-			$('div#outer_shop').fadeOut('fast', function(){
-			$('div#outer_shop').append(response).fadeIn('slow');
-			});
-			}else{
-			$('div#product_out').fadeOut('fast', function(){
-			//if($('div#product_out')[0] != null && $('div#product_out')[0] != 'undefined')alert('ok');
-			//$('div#outer_shop').append(response);
-			//$('div#product_out').fadeIn('slow');
-			//$('div#outer_shop').append(response).fadeIn('slow');
-			$('div#outer_shop').append(response).fadeIn('slow');
-			});	
-			
-				}*/
-			$('div#outer_shop').append(response);//.fadeIn('slow');
-			},
+		success:function(response){},
 		type:'GET',
 		async:false
 	});
-	AjaxData.currentWrite = count();
-	}
-	if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
-	if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});
-	return true;
-	}
-
-function get_count(){
-	var n = 0;
-	return {get:function(){return n++;},set_count:function(){n = 0;}}
 	}
 
 $(document).ready(function() {
-	var counter = get_count();
+	var ajaxus = sendAjax();
+	//var counter = get_count();
 	//слайдшоу
 $("#slides").zAccordion({startingSlide: 0,slideWidth: 700,auto: true,speed: 1000,tabWidth: 50,timeout: 6000,width: 800,height: 400,/*trigger: "mouseover",*/slideClass: "frame",slideOpenClass: "frame-open",slideClosedClass: "frame-closed",easing: "easeOutCirc"});
 	//вертикальное меню
@@ -98,10 +102,11 @@ $('a[href^="http://"]').attr("target", "_blank");//если вначале сс�
 //СОБЫТИЯ ДЛЯ AJAX!!!!
 //клик по категории в меню
 $('#accordion').on('click', 'a', function(){
-	counter.set_count();
+	
 	//$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
 	//$(this).addClass("current");
-	if(!sendAjax(counter.get, $(this)))return false;
+	//if(!sendAjax(counter.get, $(this)))return false;
+	if(!ajaxus.someFunction($(this)))return false;
 	return false;
 	});
 	
