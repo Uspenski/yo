@@ -2,12 +2,12 @@
 Cufon.replace('h1, h2, h3, h5');
 	//функции
 function CreateAjaxData(count){
-return {
+this.AjaxData = {
 		what:$('a.current:first').attr('data-what'),
 		category:(function(){
 			if($('a.current:first').attr('data-what') == "category")return 'off'; else return $('a.current:first').attr('data-category');
 			}()),
-		currentWrite:count(),
+		currentWrite:count,
 		getpanel:(function(){
 			if($('div#sort_panel')[0] == null || $('div#sort_panel')[0] == 'undefined')return 'yes'; else return 'off';
 			}()),
@@ -36,55 +36,70 @@ return {
 					}
 			}())
 		};
-	for(prop in AjaxData){
+	/*for(prop in AjaxData){
 		if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null){
 			alert(AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");
 			return false;
 			}
-		}
+		}*/
 	}
 
-function sendAjax(count, obj){
+function sendAjax(){
 	//var  AjaxData = createAjaxData(count);	
-	var count = 0;
-	var countOfWrites = 7;//добавление по countOfWrites(7) записей
-	if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
-	if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});
+	var count = 0, countOfWrites = 7,/*добавление по countOfWrites(7) записей*/ cacheElement = null, sendingAjax = function(){
+		$.ajax({
+		url:'ajax/request.php', 
+		data: this.AjaxData,
+		success:function(response){
+			$(response).hide().appendTo("div#outer_shop");
+			$('#outer_shop').children().last().fadeIn("fast", function(){
+				if(count%countOfWrites != 0){sendingAjax.call(new CreateAjaxData(++count)); alert('sendingAjax:true = '+count);}else alert('sendingAjax:false = '+count);
+				});
+			},
+		type:'GET',
+		async:false
+	});
+		}
+
 	return {
-		someFunction: function(obj){
+		checkAndSend: function(obj){
 			if($.isEmptyObject(obj)){
-				for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
+				//for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
+				alert('ваще хуйня');
 				}else{
 			//проверка меню сортировки
-			if(obj.attr('data-what') == "category" && ($('a.current:first') != obj || !obj.children().is($('a.current:first')))){
+			if(!$('ul#accordion > li').has(obj).find('a').is('a.current')){
 				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
-					count = 0;
-					$('*').fadeOut('slow', function(){
-						for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));
+				//alert('всё очистить');
+					$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+					$(obj).addClass("current");
+					count = 0;	
+					//cacheElement = $('div#outer_shop').children();
+					$('div#outer_shop').children().fadeOut('slow', function(){
+						$('div#outer_shop').children().detach();
+						sendingAjax.call(new CreateAjaxData(++count));	
+						alert('checkAndSend:sended = '+count);
 						});
 					}else{
+						$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+						$(obj).addClass("current");
+						//alert('добавить');
 						count = 1;
 						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
-						$('*').fadeOut('slow', function(){
-							for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));
+						$('div#outer_shop').children().filter('div#product_out').fadeOut('slow', function(){
+							$('div#outer_shop').children('div').filter('#product_out').detach();
+							sendingAjax.call(new CreateAjaxData(++count));	
 							});
 						}
 			//подготовка данных для ajax
 			//отправка Ajax'a
 				}
+			alert('checkAndSend = '+count);
+			if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
+			if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});	
+			return true;
 			}
 		};
-	}
-
-function oneMoreSomeFunction(){
-	//Обращение к элементам будет происходить через this, т.к. она будет вызвана методом call
-		$.ajax({
-		url:'ajax/request.php', 
-		data: AjaxData,
-		success:function(response){},
-		type:'GET',
-		async:false
-	});
 	}
 
 $(document).ready(function() {
@@ -102,11 +117,7 @@ $('a[href^="http://"]').attr("target", "_blank");//если вначале сс�
 //СОБЫТИЯ ДЛЯ AJAX!!!!
 //клик по категории в меню
 $('#accordion').on('click', 'a', function(){
-	
-	//$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-	//$(this).addClass("current");
-	//if(!sendAjax(counter.get, $(this)))return false;
-	if(!ajaxus.someFunction($(this)))return false;
+	if(!ajaxus.checkAndSend($(this)))return false;
 	return false;
 	});
 	
@@ -168,4 +179,5 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 	});
 	//открытие пункта сплит-систем при загрузке страницы магазина
 if(document.getElementById("split_system"))document.getElementById("split_system").click();
+//if(document.getElementById("Electrolux"))document.getElementById("Electrolux").click();
 });
