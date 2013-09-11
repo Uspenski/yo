@@ -7,6 +7,7 @@ function sendAjax(){
 
 	return {
 		checkAndSend: function(obj){
+			var self = this;
 			if($.isEmptyObject(obj)){
 				//for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
 				alert('ваще хуйня');
@@ -16,16 +17,17 @@ function sendAjax(){
 				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
 					$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
 					$(obj).addClass("current");
-					try{
-				this.CreateAjaxData();
-				}catch(e){
-					alert(e);
-					return false;
-					}
-					count = 0;	
+					
+						try{
+						this.CreateAjaxData();
+						}catch(e){
+						alert(e);
+						return false;
+					}	
+					count = 0;		
 					$('div#outer_shop').children().fadeOut('slow', function(){
 						$('div#outer_shop').children().detach();
-						this.sendingAjax();
+						self.sendingAjax();
 						});
 					}else{
 						$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
@@ -40,11 +42,9 @@ function sendAjax(){
 						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
 						$('div#outer_shop').children().filter('div#product_out').fadeOut('slow', function(){
 							$('div#outer_shop').children('div').filter('#product_out').detach();
-							this.sendingAjax();	
+							self.sendingAjax();	
 							});
 						}
-			//подготовка данных для ajax
-			//отправка Ajax'a
 				}
 			if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
 			if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});	
@@ -85,17 +85,33 @@ function sendAjax(){
 	for(prop in AjaxData){if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null)throw(prop+" = "+AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");	}
 	return true;
 	},
-	sendingAjax:function(){
+	sendingAjax: function(){
+		var self = this;
 		AjaxData['currentWrite'] = count;
+		AjaxData['out'] = 'count';
 		$.ajax({
 		url:'ajax/request.php', 
 		data: AjaxData,
 		success:function(response){
-			$(response).hide().appendTo("div#outer_shop");
-			$('#outer_shop').children().last().fadeIn("fast", function(){
-				if(count%countOfWrites != 0){sendingAjax.call(new CreateAjaxData(++count)); alert('sendingAjax:true = '+count);}else alert('sendingAjax:false = '+count);
+			if(response != 0){
+				AjaxData['out'] = 'product';
+				$.ajax({
+				url:'ajax/request.php', 
+				data: AjaxData,
+					success:function(response){
+					$(response).hide().appendTo("div#outer_shop");
+						$('#outer_shop').children().last().fadeIn("fast", function(){
+							if(count == 0 || count%countOfWrites != 0){
+							count++;
+							self.sendingAjax();
+							}
+						});
+					},
+				type:'GET',
+				async:false
 				});
-			},
+			}
+		},
 		type:'GET',
 		async:false
 	});
