@@ -1,16 +1,62 @@
 	//куфон
 Cufon.replace('h1, h2, h3, h5');
 	//функции
-function CreateAjaxData(count){
-this.AjaxData = {
+function sendAjax(){
+	//var  AjaxData = createAjaxData(count);	
+	var count = 0, countOfWrites = 7,/*добавление по countOfWrites(7) записей*/ AjaxData = {};
+
+	return {
+		checkAndSend: function(obj){
+			if($.isEmptyObject(obj)){
+				//for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
+				alert('ваще хуйня');
+				}else{
+			//проверка меню сортировки
+			if(!$('ul#accordion > li').has(obj).find('a').is('a.current')){
+				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
+					$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+					$(obj).addClass("current");
+					try{
+				this.CreateAjaxData();
+				}catch(e){
+					alert(e);
+					return false;
+					}
+					count = 0;	
+					$('div#outer_shop').children().fadeOut('slow', function(){
+						$('div#outer_shop').children().detach();
+						this.sendingAjax();
+						});
+					}else{
+						$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
+						$(obj).addClass("current");
+						try{
+				this.CreateAjaxData();
+				}catch(e){
+					alert(e);
+					return false;
+					}
+						count = 1;
+						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
+						$('div#outer_shop').children().filter('div#product_out').fadeOut('slow', function(){
+							$('div#outer_shop').children('div').filter('#product_out').detach();
+							this.sendingAjax();	
+							});
+						}
+			//подготовка данных для ajax
+			//отправка Ajax'a
+				}
+			if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
+			if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});	
+			return true;
+			},
+			CreateAjaxData: function(){
+		AjaxData = {
 		what:$('a.current:first').attr('data-what'),
 		category:(function(){
 			if($('a.current:first').attr('data-what') == "category")return 'off'; else return $('a.current:first').attr('data-category');
 			}()),
-		currentWrite:count,
-		getpanel:(function(){
-			if($('div#sort_panel')[0] == null || $('div#sort_panel')[0] == 'undefined')return 'yes'; else return 'off';
-			}()),
+		//currentWrite:count,
 		key:$('a.current:first').attr('data-key'),
 		data:$('a.current:first').attr('href'),
 		id:$('a.current:first').attr('id'),
@@ -36,20 +82,14 @@ this.AjaxData = {
 					}
 			}())
 		};
-	/*for(prop in AjaxData){
-		if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null){
-			alert(AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");
-			return false;
-			}
-		}*/
-	}
-
-function sendAjax(){
-	//var  AjaxData = createAjaxData(count);	
-	var count = 0, countOfWrites = 7,/*добавление по countOfWrites(7) записей*/ cacheElement = null, sendingAjax = function(){
+	for(prop in AjaxData){if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null)throw(prop+" = "+AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");	}
+	return true;
+	},
+	sendingAjax:function(){
+		AjaxData['currentWrite'] = count;
 		$.ajax({
 		url:'ajax/request.php', 
-		data: this.AjaxData,
+		data: AjaxData,
 		success:function(response){
 			$(response).hide().appendTo("div#outer_shop");
 			$('#outer_shop').children().last().fadeIn("fast", function(){
@@ -60,45 +100,6 @@ function sendAjax(){
 		async:false
 	});
 		}
-
-	return {
-		checkAndSend: function(obj){
-			if($.isEmptyObject(obj)){
-				//for(var i=0; i<countOfWrites; i++)oneMoreSomeFunction.call(new CreateAjaxData(count++));//добавление при прокрутке
-				alert('ваще хуйня');
-				}else{
-			//проверка меню сортировки
-			if(!$('ul#accordion > li').has(obj).find('a').is('a.current')){
-				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
-				//alert('всё очистить');
-					$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-					$(obj).addClass("current");
-					count = 0;	
-					//cacheElement = $('div#outer_shop').children();
-					$('div#outer_shop').children().fadeOut('slow', function(){
-						$('div#outer_shop').children().detach();
-						sendingAjax.call(new CreateAjaxData(++count));	
-						alert('checkAndSend:sended = '+count);
-						});
-					}else{
-						$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
-						$(obj).addClass("current");
-						//alert('добавить');
-						count = 1;
-						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
-						$('div#outer_shop').children().filter('div#product_out').fadeOut('slow', function(){
-							$('div#outer_shop').children('div').filter('#product_out').detach();
-							sendingAjax.call(new CreateAjaxData(++count));	
-							});
-						}
-			//подготовка данных для ajax
-			//отправка Ajax'a
-				}
-			alert('checkAndSend = '+count);
-			if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
-			if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});	
-			return true;
-			}
 		};
 	}
 

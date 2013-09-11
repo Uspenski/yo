@@ -9,7 +9,7 @@ if($_GET['key']){
 	$currentWrite = $_GET['currentWrite'];
 	$sortBy = $_GET['sortBy'];
 	$dom = new DOMDocument();
-	if($currentWrite == 0 && $what == 'category' && $_GET['getpanel'] == 'yes'){
+	if($currentWrite == 0 && $what == 'category'){
 		$sort_panel = $dom->createElement('div');
 		$sort_panel->setAttribute("id", "sort_panel");
 		//надпись "сортировка:"
