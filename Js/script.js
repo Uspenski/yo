@@ -1,10 +1,9 @@
 	//куфон
 Cufon.replace('h1, h2, h3, h5');
 	//функции
-function sendAjax(){
-	//var  AjaxData = createAjaxData(count);	
+	
+function sendAjax(){	
 	var count = 0, countOfWrites = 7,/*добавление по countOfWrites(7) записей*/ AjaxData = {};
-
 	return {
 		checkAndSend: function(obj){
 			var self = this;
@@ -17,17 +16,18 @@ function sendAjax(){
 				//здесь будет выполняться скрытие всего блока outer_shop, ВКЛЮЧАЯ меню сортировки
 					$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
 					$(obj).addClass("current");
-					
 						try{
 						this.CreateAjaxData();
 						}catch(e){
 						alert(e);
 						return false;
 					}	
-					count = 0;		
+					count = 0;
 					$('div#outer_shop').children().fadeOut('slow', function(){
-						$('div#outer_shop').children().detach();
-						self.sendingAjax();
+						if($('div#outer_shop').children().last().is(this)){
+							$('div#outer_shop').children().detach();
+							self.sendingAjax(count);
+						}
 						});
 					}else{
 						$('.graphite .accordion a, .graphite .accordion ul li a').removeClass("current");
@@ -40,14 +40,14 @@ function sendAjax(){
 					}
 						count = 1;
 						//а здесь будет выполняться скрытие ТОЛЬКО товаров, НЕВКЛЮЧАЯ меню сортировки
-						$('div#outer_shop').children().filter('div#product_out').fadeOut('slow', function(){
-							$('div#outer_shop').children('div').filter('#product_out').detach();
-							self.sendingAjax();	
+						$('div#outer_shop').children().not('#sort_panel').fadeOut('slow', function(){
+							if($('div#outer_shop').children().not('#sort_panel').last().is(this)){
+								$('div#outer_shop').children('div').not('#sort_panel').detach();
+								self.sendingAjax(count);
+								}		
 							});
 						}
 				}
-			if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
-			if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});	
 			return true;
 			},
 			CreateAjaxData: function(){
@@ -56,20 +56,19 @@ function sendAjax(){
 		category:(function(){
 			if($('a.current:first').attr('data-what') == "category")return 'off'; else return $('a.current:first').attr('data-category');
 			}()),
-		//currentWrite:count,
 		key:$('a.current:first').attr('data-key'),
 		data:$('a.current:first').attr('href'),
 		id:$('a.current:first').attr('id'),
 		invertor:(function(){
-			if($('input[type=checkbox]')[0] != null && $('input[type=checkbox]')[0] != 'undefined'){
-				if($('input#check:checkbox:checked').length == 1)return 'on';else return 'off';
+			if($('input[type=checkbox]')[0] != null || $('input[type=checkbox]')[0] != 'undefined'){
+				if($('input#invertor:checkbox:checked').length == 1)return 'on';else return 'off';
 			}else{
 				return 'off';
 				}
 			}()),
 		classPower:(function(){
 			if($('select')[0] != null && $('select')[0] != 'undefined'){
-					if($('#select_right_sort_block select') != 'none')return $('#select_right_sort_block select').val();else return 'off';
+					if($('#select_right_sort_block select').val() != 'none')return $('#select_right_sort_block select').val();else return 'off';				
 				}else{
 					return 'off';
 					}
@@ -85,14 +84,15 @@ function sendAjax(){
 	for(prop in AjaxData){if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null)throw(prop+" = "+AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");	}
 	return true;
 	},
-	sendingAjax: function(){
-		var self = this;
-		AjaxData['currentWrite'] = count;
+	sendingAjax: function(val){
+	var self = this;
+		AjaxData['currentWrite'] = val;
 		AjaxData['out'] = 'count';
 		$.ajax({
 		url:'ajax/request.php', 
 		data: AjaxData,
-		success:function(response){
+		dataType:'text',
+		success:function(response){	
 			if(response != 0){
 				AjaxData['out'] = 'product';
 				$.ajax({
@@ -100,11 +100,10 @@ function sendAjax(){
 				data: AjaxData,
 					success:function(response){
 					$(response).hide().appendTo("div#outer_shop");
-						$('#outer_shop').children().last().fadeIn("fast", function(){
-							if(count == 0 || count%countOfWrites != 0){
-							count++;
-							self.sendingAjax();
-							}
+					if(count == 0){if($('input[type=checkbox]')[0] == null || $('input[type=checkbox]')[0] == 'undefined')$('div#invert_right_sort_block').css({'border-right-style':'none','border-right-width':'0px','border-right-color':'none'});
+					if($('select')[0] == null || $('select')[0] == 'undefined')$('#href_right_sort_block').css({'border-left-style':'none','border-left-width':'0px','border-left-color':'none','padding-left':'10px'});}
+						$('#outer_shop').children().last().fadeIn("fast", function(){	
+							if(count == 0 || count%countOfWrites != 0)self.sendingAjax(++count);	
 						});
 					},
 				type:'GET',
@@ -121,7 +120,6 @@ function sendAjax(){
 
 $(document).ready(function() {
 	var ajaxus = sendAjax();
-	//var counter = get_count();
 	//слайдшоу
 $("#slides").zAccordion({startingSlide: 0,slideWidth: 700,auto: true,speed: 1000,tabWidth: 50,timeout: 6000,width: 800,height: 400,/*trigger: "mouseover",*/slideClass: "frame",slideOpenClass: "frame-open",slideClosedClass: "frame-closed",easing: "easeOutCirc"});
 	//вертикальное меню
@@ -146,26 +144,16 @@ $('#invert_right_sort_block input[type=checkbox]').click();
 
 //клик по чекбоксу
 $('#outer_shop').on('click', '#invert_right_sort_block input[type=checkbox]', function(){
-	counter.set_count();
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-	if(!sendAjax(counter.get))return false;
+if(!ajaxus.checkAndSend($('a.current:first')))return false;
 	});
 	
 //изменение значения 'select'
 $('#outer_shop').on('change', '#select_right_sort_block select', function(){
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-	if(!sendAjax(counter.get))return false;
-	//alert($(this).val());
+	if(!ajaxus.checkAndSend($('a.current:first')))return false;
 	});
 	
 //клик по ссылке "цена:"
 $('#outer_shop').on('click', '#href_right_sort_block a', function(){
-	counter.set_count();
-	$('div#product_out').fadeOut('fast',function(){
-		$('div').detach('#product_out');});
-	if(!sendAjax(counter.get))return false;
 	switch ($(this).attr("data-sort")){
 		case "none":{	
 			$(this).attr("data-sort", "down");
@@ -192,9 +180,9 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 			break;
 			}
 		}
+	if(!ajaxus.checkAndSend($('a.current:first')))return false;
 	return false;
 	});
 	//открытие пункта сплит-систем при загрузке страницы магазина
 if(document.getElementById("split_system"))document.getElementById("split_system").click();
-//if(document.getElementById("Electrolux"))document.getElementById("Electrolux").click();
 });

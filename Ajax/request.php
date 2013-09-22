@@ -1,15 +1,25 @@
-﻿<?php
+<?php
 define('_EXEC', 1);
 require_once("action.ink");
 if($_GET['key']){
 	if(!Connect::todb()->verify_key($_GET['data'], $_GET['key']))return;
-	if(isset($_GET['category']) && $_GET['category'] != null)$category = $_GET['category'];
+	if($_GET['currentWrite'] != 0)Connect::todb()->checkTheRequest(array(
+	"out"=>$_GET['out'],
+	"what"=>$_GET['what'],
+	"category"=>$_GET['category'],
+	"id"=>$_GET['id'],
+	"invertor"=>$_GET['invertor'],
+	"classPower"=>$_GET['classPower'],
+	"sortPrice"=>$_GET['sortPrice'],
+	"currentWrite"=>$_GET['currentWrite']
+	));else{
+		if($_GET['out'] == 'count')echo 1;else {
+		//echo '<div id="sort_panel"></div>';
 	$what = $_GET['what'];
 	$id = $_GET['id'];
 	$currentWrite = $_GET['currentWrite'];
 	$sortBy = $_GET['sortBy'];
 	$dom = new DOMDocument();
-	if($currentWrite == 0 && $what == 'category'){
 		$sort_panel = $dom->createElement('div');
 		$sort_panel->setAttribute("id", "sort_panel");
 		//надпись "сортировка:"
@@ -53,21 +63,6 @@ if($_GET['key']){
 			$option->appendChild($text);
 			$select->appendChild($option);
 			Connect::todb()->getPower($id, &$select, $dom);
-			/*$option = $dom->createElement("option");
-			$option->setAttribute("value", "A");
-			$text = $dom->createTextNode("класс A");
-			$option->appendChild($text);
-			$select->appendChild($option);
-			$option = $dom->createElement("option");
-			$option->setAttribute("value", "B");
-			$text = $dom->createTextNode("класс B");
-			$option->appendChild($text);
-			$select->appendChild($option);
-			$option = $dom->createElement("option");
-			$option->setAttribute("value", "C");
-			$text = $dom->createTextNode("класс C");
-			$option->appendChild($text);
-			$select->appendChild($option);	*/
 			$div->appendChild($select);
 			}
 		$form->appendChild($div);
@@ -84,8 +79,8 @@ if($_GET['key']){
 		$sort_panel->appendChild($form);
 		$sort_panel->appendChild($sortings);
 		$dom->appendChild($sort_panel);
-		}
-	Connect::todb()->importElementsA($dom, 'mag', &$dom);
+	//Connect::todb()->importElementsA($dom, 'mag', &$dom);
 	echo $dom->saveXML();
+	}}
 	};
 ?>
