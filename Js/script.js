@@ -19,7 +19,7 @@ function sendAjax(){
 						try{
 						this.CreateAjaxData();
 						}catch(e){
-						alert(e);
+						//alert(e);
 						return false;
 					}	
 					count = 0;
@@ -35,7 +35,7 @@ function sendAjax(){
 						try{
 				this.CreateAjaxData();
 				}catch(e){
-					alert(e);
+					//alert(e);
 					return false;
 					}
 						count = 1;
@@ -181,6 +181,11 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 			}
 		}
 	if(!ajaxus.checkAndSend($('a.current:first')))return false;
+	return false;
+	});
+
+$('#outer_shop').on('click', '#right_shop_block_a > a', function(){
+	//alert($(this).attr('id'));
 	return false;
 	});
 	//открытие пункта сплит-систем при загрузке страницы магазина
