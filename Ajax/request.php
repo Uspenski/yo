@@ -83,4 +83,6 @@ if($_GET['key']){
 	echo $dom->saveXML();
 	}}
 	};
+if($_GET['give_me_characts_on_id'])Connect::todb()->give_me_more_characts($_GET['give_me_characts_on_id']);
+//не забыть о проблеме, появляющейся при отсутствии баз
 ?>
