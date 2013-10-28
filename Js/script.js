@@ -81,7 +81,7 @@ function sendAjax(){
 					}
 			}())
 		};
-	for(prop in AjaxData){if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null)throw(prop+" = "+AjaxData[prop]+" На странице возникла неустранимая ошибка, пожалуйста, перезагрузите страницу");	}
+	for(prop in AjaxData){if(AjaxData[prop] == 'undefined' || AjaxData[prop] == null)throw(prop+" = "+AjaxData[prop]+" На странице возникла ошибка, пожалуйста, перезагрузите страницу");	}
 	return true;
 	},
 	sendingAjax: function(val){
@@ -118,6 +118,10 @@ function sendAjax(){
 		};
 	}
 
+function give_me_characts(arr){
+	
+	}
+
 $(document).ready(function() {
 	var ajaxus = sendAjax();
 	//слайдшоу
@@ -130,6 +134,7 @@ onload = function () {for(var lnk = document.links, j = 0; j < lnk.length; j++)i
 $('a[href^="http://"]').attr("target", "_blank");//если вначале ссылки присутствует "http://", т.е. ссылка на сторонний сайт - открывает её в новом окне
 
 //СОБЫТИЯ ДЛЯ AJAX!!!!
+
 //клик по категории в меню
 $('#accordion').on('click', 'a', function(){
 	if(!ajaxus.checkAndSend($(this)))return false;
@@ -184,8 +189,17 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 	return false;
 	});
 
+//клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
-	//alert($(this).attr('id'));
+	//$(this).attr('id');
+	//$(this).parents("#product_out").css('border-bottom-color', 'red');
+	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
+	arr['id'] = $(this).attr('id');
+	arr['obj'] = $(this).parents("#product_out");
+	$(obj).fadeOut('fast', function(){
+		$(this).detach();
+		if($(obj).last().is(this))give_me_characts(arr);
+		});		
 	return false;
 	});
 	//открытие пункта сплит-систем при загрузке страницы магазина
