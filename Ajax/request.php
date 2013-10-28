@@ -1,4 +1,5 @@
 <?php
+header("Content-type: text/html; charset=utf-8");
 define('_EXEC', 1);
 require_once("action.ink");
 if($_GET['key']){
@@ -14,7 +15,6 @@ if($_GET['key']){
 	"currentWrite"=>$_GET['currentWrite']
 	));else{
 		if($_GET['out'] == 'count')echo 1;else {
-		//echo '<div id="sort_panel"></div>';
 	$what = $_GET['what'];
 	$id = $_GET['id'];
 	$currentWrite = $_GET['currentWrite'];
