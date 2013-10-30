@@ -84,5 +84,6 @@ if($_GET['key']){
 	}}
 	};
 if($_GET['give_me_characts_on_id'])Connect::todb()->give_me_more_characts($_GET['give_me_characts_on_id']);
+//if($_GET['give_to_me_of_less_characts'])Connect::todb()->give_to_me_of_less_characts($_GET['give_to_me_of_less_characts']);
 //не забыть о проблеме, появляющейся при отсутствии баз
 ?>

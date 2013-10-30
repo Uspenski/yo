@@ -120,11 +120,22 @@ function sendAjax(){
 
 function give_me_characts(arr){
 	$.get('ajax/request.php', {'give_me_characts_on_id':arr['id']}, function(response){
+		$(arr['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
+			$(arr['obj']).find('#right_shop_block_a > a').text('Скрыть характеристики...').fadeIn('fast');
+			});
 		$(response).hide().insertBefore($(arr['obj']).find("#right_shop_block_empty"));
 		var size_of_block = 56+($(arr['obj']).find('p').length)*15;
 		$(arr['obj']).animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
 			$(arr['obj']).find('p').show('fast');
 		});
+		});
+	}
+
+function give_to_me_of_less_characts(obj){
+	$.get('ajax/request.php', {'give_to_me_of_less_characts':obj['id']}, function(response){
+		$(obj['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
+			 
+			});
 		});
 	}
 
@@ -197,14 +208,21 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 
 //клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
-	//$(this).attr('id');
-	//$(this).parents("#product_out").css('border-bottom-color', 'red');
 	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
 	arr['id'] = $(this).attr('id');
 	arr['obj'] = $(this).parents("#product_out");
 	$(obj).fadeOut('fast', function(){
 		$(this).detach();
-		if($(obj).last().is(this))give_me_characts(arr);
+		if($(obj).last().is(this)){
+			if($('#outer_shop').children('#product_out').is('.current'))give_to_me_of_less_characts({
+				'id':$('.current').find('#right_shop_block_a > a').attr('id'),
+				'obj':$('.current'),
+				'arr':arr
+				});else{
+					arr['obj'].addClass("current");
+					give_me_characts(arr);
+					}
+			};
 		});		
 	return false;
 	});
