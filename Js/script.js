@@ -118,6 +118,7 @@ function sendAjax(){
 		};
 	}
 
+/*
 function give_me_characts(arr){
 	$.get('ajax/request.php', {'give_me_characts_on_id':arr['id']}, function(response){
 		$(arr['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
@@ -142,7 +143,7 @@ function give_to_me_of_less_characts(arr){
 		});
 		});
 	}
-
+	
 function give_to_me_of_less_characts(obj){
 	$.get('ajax/request.php', {'give_to_me_of_less_characts':obj['id']}, function(response){
 		$(obj['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
@@ -150,6 +151,8 @@ function give_to_me_of_less_characts(obj){
 			});
 		});
 	}
+*/
+
 
 $(document).ready(function() {
 	var ajaxus = sendAjax();
@@ -220,6 +223,7 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 
 //клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
+	/*
 	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
 	arr['id'] = $(this).attr('id');
 	arr['obj'] = $(this).parents("#product_out");
@@ -235,7 +239,7 @@ $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
 					give_me_characts(arr);
 					}
 			};
-		});		
+		});*/		
 	return false;
 	});
 	//открытие пункта сплит-систем при загрузке страницы магазина
