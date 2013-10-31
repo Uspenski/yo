@@ -130,6 +130,18 @@ function give_me_characts(arr){
 		});
 		});
 	}
+	
+function give_to_me_of_less_characts(arr){
+	$.get('ajax/request.php', {'give_to_me_of_less_characts':arr['id']}, function(response){
+		$(arr['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
+			$(arr['obj']).find('#right_shop_block_a > a').text('Просмотреть характеристики...').fadeIn('fast');
+			});
+		$(response).hide().insertBefore($(arr['obj']).find("#right_shop_block_empty"));
+		$(arr['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
+			$(arr['obj']).find('p').show('fast');
+		});
+		});
+	}
 
 function give_to_me_of_less_characts(obj){
 	$.get('ajax/request.php', {'give_to_me_of_less_characts':obj['id']}, function(response){
