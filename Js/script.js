@@ -118,6 +118,36 @@ function sendAjax(){
 		};
 	}
 
+function Create_obj_of_characts(){
+	this.current = new Object();
+	this.newer = new Object();
+	}
+
+Create_obj_of_characts.prototype.update_objects = function(obj_ct){
+	//var arr = new Array(), obj = $(this).parents("#product_out").find("p");
+	//arr['id'] = $(this).attr('id');
+	//arr['obj'] = $(this).parents("#product_out");
+	this.newer = {'obj': $(obj_ct).parents("#product_out"), 'id':$(obj_ct).attr('id')};
+	this.current = {'obj':$('#outer_shop').children('#product_out').is('.current'), 'id':$('.current').find('#right_shop_block_a > a').attr('id')};
+	return {'current': this.current, 'newer':this.newer};
+	/*$(obj).fadeOut('fast', function(){
+		$(this).detach();
+		if($(obj).last().is(this)){
+			if($('#outer_shop').children('#product_out').is('.current'))give_to_me_of_less_characts({
+				'id':$('.current').find('#right_shop_block_a > a').attr('id'),
+				'obj':$('.current'),
+				'arr':arr
+				});else{
+					arr['obj'].addClass("current");
+					give_me_characts(arr);
+					}
+			};
+		});*/
+	}
+
+function what_should_I_do(obj){
+	
+	}
 /*
 function give_me_characts(arr){
 	$.get('ajax/request.php', {'give_me_characts_on_id':arr['id']}, function(response){
@@ -156,6 +186,7 @@ function give_to_me_of_less_characts(obj){
 
 $(document).ready(function() {
 	var ajaxus = sendAjax();
+	var obj_of_characts = new Create_obj_of_characts();
 	//слайдшоу
 $("#slides").zAccordion({startingSlide: 0,slideWidth: 700,auto: true,speed: 1000,tabWidth: 50,timeout: 6000,width: 800,height: 400,/*trigger: "mouseover",*/slideClass: "frame",slideOpenClass: "frame-open",slideClosedClass: "frame-closed",easing: "easeOutCirc"});
 	//вертикальное меню
@@ -223,6 +254,7 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 
 //клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
+	what_should_I_do(obj_of_characts.update_objects($(this)));
 	/*
 	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
 	arr['id'] = $(this).attr('id');
