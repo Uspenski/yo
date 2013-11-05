@@ -128,7 +128,13 @@ Create_obj_of_characts.prototype.update_objects = function(obj_ct){
 	//arr['id'] = $(this).attr('id');
 	//arr['obj'] = $(this).parents("#product_out");
 	this.newer = {'obj': $(obj_ct).parents("#product_out"), 'id':$(obj_ct).attr('id')};
-	this.current = {'obj':$('#outer_shop').children('#product_out').is('.current'), 'id':$('.current').find('#right_shop_block_a > a').attr('id')};
+	if(
+	$('#outer_shop').children('#product_out').filter('.current')[0] != null && 
+	$('#outer_shop').children('#product_out').filter('.current')[0] != 'undefined'){
+		this.current = {
+			'obj':$('#outer_shop').children('#product_out').filter('.current'), 
+			'id':$('#outer_shop').children('#product_out').filter('.current').find('#right_shop_block_a > a').attr('id')}
+			}else this.current = new Object();
 	return {'current': this.current, 'newer':this.newer};
 	/*$(obj).fadeOut('fast', function(){
 		$(this).detach();
@@ -145,9 +151,29 @@ Create_obj_of_characts.prototype.update_objects = function(obj_ct){
 		});*/
 	}
 
-function what_should_I_do(obj){
-	
-	}
+function what_should_I_do(){
+	var me = this;
+if(!$.isEmptyObject(me.current)){}else
+$($(me.newer['obj']).find('p')).fadeOut('fast', function(){		
+	if($(me.newer['obj']).find('p').last().is(this)){
+		//отправка Ajax'a
+		$.get('ajax/request.php', {'give_me_characts_on_id':me.newer['id']}, function(response){
+			$(me.newer['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
+				$(me.newer['obj']).find('#right_shop_block_a > a').text('Скрыть характеристики...').fadeIn('fast');
+				});//fadeOut('fast', function(){
+			$(response).hide().insertBefore($(me.newer['obj']).find("#right_shop_block_empty"));
+			var size_of_block = 56+($(me.newer['obj']).find('p').length)*15;
+			$(me.newer['obj']).animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
+				$(me.newer['obj']).find('p').show('fast', function(){
+					$(me.newer['obj']).addClass('current');
+					});//show('fast', function(){
+				});//animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
+			});//$.get('ajax/request.php', {'give_me_characts_on_id':this.newer['id']}, function(response){
+			}//if($(me.newer['obj']).find('p').last().is(this)){
+		$(this).detach();
+	});//fadeOut('fast', function()
+}//function what_should_I_do(){
+
 /*
 function give_me_characts(arr){
 	$.get('ajax/request.php', {'give_me_characts_on_id':arr['id']}, function(response){
@@ -254,7 +280,7 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 
 //клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
-	what_should_I_do(obj_of_characts.update_objects($(this)));
+	what_should_I_do.call(obj_of_characts.update_objects($(this)));
 	/*
 	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
 	arr['id'] = $(this).attr('id');
