@@ -19,7 +19,6 @@ function sendAjax(){
 						try{
 						this.CreateAjaxData();
 						}catch(e){
-						//alert(e);
 						return false;
 					}	
 					count = 0;
@@ -124,9 +123,6 @@ function Create_obj_of_characts(){
 	}
 
 Create_obj_of_characts.prototype.update_objects = function(obj_ct){
-	//var arr = new Array(), obj = $(this).parents("#product_out").find("p");
-	//arr['id'] = $(this).attr('id');
-	//arr['obj'] = $(this).parents("#product_out");
 	this.newer = {'obj': $(obj_ct).parents("#product_out"), 'id':$(obj_ct).attr('id')};
 	if(
 	$('#outer_shop').children('#product_out').filter('.current')[0] != null && 
@@ -136,79 +132,63 @@ Create_obj_of_characts.prototype.update_objects = function(obj_ct){
 			'id':$('#outer_shop').children('#product_out').filter('.current').find('#right_shop_block_a > a').attr('id')}
 			}else this.current = new Object();
 	return {'current': this.current, 'newer':this.newer};
-	/*$(obj).fadeOut('fast', function(){
-		$(this).detach();
-		if($(obj).last().is(this)){
-			if($('#outer_shop').children('#product_out').is('.current'))give_to_me_of_less_characts({
-				'id':$('.current').find('#right_shop_block_a > a').attr('id'),
-				'obj':$('.current'),
-				'arr':arr
-				});else{
-					arr['obj'].addClass("current");
-					give_me_characts(arr);
-					}
-			};
-		});*/
-	}
+}
 
 function what_should_I_do(){
 	var me = this;
-if(!$.isEmptyObject(me.current)){}else
-$($(me.newer['obj']).find('p')).fadeOut('fast', function(){		
-	if($(me.newer['obj']).find('p').last().is(this)){
-		//отправка Ajax'a
-		$.get('ajax/request.php', {'give_me_characts_on_id':me.newer['id']}, function(response){
-			$(me.newer['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
-				$(me.newer['obj']).find('#right_shop_block_a > a').text('Скрыть характеристики...').fadeIn('fast');
-				});//fadeOut('fast', function(){
-			$(response).hide().insertBefore($(me.newer['obj']).find("#right_shop_block_empty"));
-			var size_of_block = 56+($(me.newer['obj']).find('p').length)*15;
-			$(me.newer['obj']).animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
-				$(me.newer['obj']).find('p').show('fast', function(){
-					$(me.newer['obj']).addClass('current');
-					});//show('fast', function(){
-				});//animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
-			});//$.get('ajax/request.php', {'give_me_characts_on_id':this.newer['id']}, function(response){
-			}//if($(me.newer['obj']).find('p').last().is(this)){
-		$(this).detach();
-	});//fadeOut('fast', function()
+if($(me.current['obj']).is($(me.newer['obj'])))close_characts.call(me.newer);else open_characts.call(me.newer); 
+/*if(!$.isEmptyObject(me.current)){
+	if($(me.current['obj']).is($(me.newer['obj']))){
+	close_characts.call(me.newer);	
+		}else{
+			open_characts.call(me.newer);
+			close_characts.call(me.current);
+			}
+	}else open_characts.call(me.newer);*/
 }//function what_should_I_do(){
 
-/*
-function give_me_characts(arr){
-	$.get('ajax/request.php', {'give_me_characts_on_id':arr['id']}, function(response){
-		$(arr['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
-			$(arr['obj']).find('#right_shop_block_a > a').text('Скрыть характеристики...').fadeIn('fast');
-			});
-		$(response).hide().insertBefore($(arr['obj']).find("#right_shop_block_empty"));
-		var size_of_block = 56+($(arr['obj']).find('p').length)*15;
-		$(arr['obj']).animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
-			$(arr['obj']).find('p').show('fast');
-		});
-		});
+function close_characts(){
+	var me = this;
+$($(me['obj']).find('p')).fadeOut('fast', function(){		
+		if($(me['obj']).find('p').last().is(this)){
+		//отправка Ajax'a
+		$.get('ajax/request.php', {'give_to_me_of_less_characts':me['id']}, function(response){
+			$(me['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
+				$(me['obj']).find('#right_shop_block_a > a').text('Просмотреть характеристики...').fadeIn('fast');
+				});//fadeOut('fast', function(){
+			$(response).hide().insertBefore($(me['obj']).find("#right_shop_block_empty"));
+			$(me['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
+				$(me['obj']).find('p').show('fast', function(){
+					$(me['obj']).removeClass('current');
+					});//show('fast', function(){
+				});//animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
+			});//$.get('ajax/request.php', {'give_to_me_of_less_characts':this['id']}, function(response){
+			}//if($(me['obj']).find('p').last().is(this)){
+		$(this).detach();
+		})
 	}
-	
-function give_to_me_of_less_characts(arr){
-	$.get('ajax/request.php', {'give_to_me_of_less_characts':arr['id']}, function(response){
-		$(arr['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
-			$(arr['obj']).find('#right_shop_block_a > a').text('Просмотреть характеристики...').fadeIn('fast');
-			});
-		$(response).hide().insertBefore($(arr['obj']).find("#right_shop_block_empty"));
-		$(arr['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
-			$(arr['obj']).find('p').show('fast');
-		});
-		});
-	}
-	
-function give_to_me_of_less_characts(obj){
-	$.get('ajax/request.php', {'give_to_me_of_less_characts':obj['id']}, function(response){
-		$(obj['obj']).animate({height: '182px'}, 'fast', 'swing', function(){
-			 
-			});
-		});
-	}
-*/
 
+function open_characts(){
+	var me = this;
+$($(me['obj']).find('p')).fadeOut('fast', function(){		
+	if($(me['obj']).find('p').last().is(this)){
+		//отправка Ajax'a
+		$.get('ajax/request.php', {'give_me_characts_on_id':me['id']}, function(response){
+			$(me['obj']).find('#right_shop_block_a > a').fadeOut('fast', function(){
+				$(me['obj']).find('#right_shop_block_a > a').text('Скрыть характеристики...').fadeIn('fast');
+				});//fadeOut('fast', function(){
+			$(response).hide().insertBefore($(me['obj']).find("#right_shop_block_empty"));
+			var size_of_block = 56+($(me['obj']).find('p').length)*15;
+			$(me['obj']).animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
+				$(me['obj']).find('p').show('fast', function(){
+					$(me['obj']).addClass('current');
+					});//show('fast', function(){
+				});//animate({height: size_of_block+'px'}, 'fast', 'swing', function(){
+			});//$.get('ajax/request.php', {'give_me_characts_on_id':this['id']}, function(response){
+			}//if($(me['obj']).find('p').last().is(this)){
+		$(this).detach();
+	});//fadeOut('fast', function()
+	}
 
 $(document).ready(function() {
 	var ajaxus = sendAjax();
@@ -280,26 +260,9 @@ $('#outer_shop').on('click', '#href_right_sort_block a', function(){
 
 //клик по характеристикам
 $('#outer_shop').on('click', '#right_shop_block_a > a', function(){
-	what_should_I_do.call(obj_of_characts.update_objects($(this)));
-	/*
-	var arr = new Array(), obj = $(this).parents("#product_out").find("p");
-	arr['id'] = $(this).attr('id');
-	arr['obj'] = $(this).parents("#product_out");
-	$(obj).fadeOut('fast', function(){
-		$(this).detach();
-		if($(obj).last().is(this)){
-			if($('#outer_shop').children('#product_out').is('.current'))give_to_me_of_less_characts({
-				'id':$('.current').find('#right_shop_block_a > a').attr('id'),
-				'obj':$('.current'),
-				'arr':arr
-				});else{
-					arr['obj'].addClass("current");
-					give_me_characts(arr);
-					}
-			};
-		});*/		
+	what_should_I_do.call(obj_of_characts.update_objects($(this)));		
 	return false;
 	});
-	//открытие пункта сплит-систем при загрузке страницы магазина
+//открытие пункта сплит-систем при загрузке страницы магазина
 if(document.getElementById("split_system"))document.getElementById("split_system").click();
 });

@@ -83,7 +83,7 @@ if($_GET['key']){
 	echo $dom->saveXML();
 	}}
 	};
-if($_GET['give_me_characts_on_id'])Connect::todb()->give_me_more_characts($_GET['give_me_characts_on_id']);
-//if($_GET['give_to_me_of_less_characts'])Connect::todb()->give_to_me_of_less_characts($_GET['give_to_me_of_less_characts']);
+if($_GET['give_me_characts_on_id'])Connect::todb()->give_me_characts($_GET['give_me_characts_on_id'], 'more');
+if($_GET['give_to_me_of_less_characts'])Connect::todb()->give_me_characts($_GET['give_to_me_of_less_characts'], 'less');
 //не забыть о проблеме, появляющейся при отсутствии баз
 ?>
